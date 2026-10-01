@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#080b22">
+  <meta name="description" content="Aurora Dash 3D: um runner original de três faixas com menu e opções de acessibilidade.">
+  <title>Aurora Dash 3D — Corrida do Vale</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="game-shell" id="gameShell">
+    <canvas id="gameCanvas" tabindex="0" aria-label="Cenário 3D do jogo Aurora Dash"></canvas>
+    <div class="sky-glow" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div id="hitFlash" class="hit-flash" aria-hidden="true"></div>
+
+    <header class="hud" aria-label="Informações da corrida">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span class="brand-copy">
+          <strong>Aurora Dash <b>3D</b></strong>
+          <small>vale dos cristais</small>
+        </span>
+      </div>
+
+      <div class="stats" aria-label="Placar atual">
+        <div class="stat">
+          <span>Pontos</span>
+          <strong id="scoreValue">0</strong>
+        </div>
+        <div class="stat">
+          <span>Distância</span>
+          <strong id="distanceValue">0 m</strong>
+        </div>
+        <div class="stat speed-stat">
+          <span>Ritmo</span>
+          <strong id="speedValue">1,0x</strong>
+        </div>
+        <div class="stat combo-stat">
+          <span>Combo</span>
+          <strong id="comboValue">x0</strong>
+        </div>
+      </div>
+
+      <div class="hud-actions">
+        <button id="soundButton" class="round-button" type="button" aria-label="Desativar som" title="Som">♫</button>
+        <button id="pauseButton" class="round-button" type="button" aria-label="Pausar jogo" title="Pausar" disabled>Ⅱ</button>
+      </div>
+    </header>
+
+    <div class="mission-bar" aria-label="Progresso da fase">
+      <div class="mission-label"><span aria-hidden="true">✧</span><span id="phaseLabel">Fase 1 • Entrada do Vale</span></div>
+      <div class="progress-track" role="progressbar" aria-label="Progresso da fase" aria-valuemin="0" aria-valuemax="180" aria-valuenow="0"><span id="missionFill"></span></div>
+      <strong id="missionValue">0 / 180 m</strong>
+    </div>
+
+    <div class="integrity" aria-label="Integridade do corredor">
+      <span>Integridade</span>
+      <div id="healthDots" class="health-dots" role="img" aria-label="3 de 3 pontos de integridade"></div>
+    </div>
+
+    <div id="statusMessage" class="status-message" role="status" aria-live="polite">
+      Menu principal • escolha uma opção
+    </div>
+
+    <div id="countdown" class="countdown" aria-live="assertive" hidden>
+      <strong id="countdownValue">3</strong>
+      <span>prepare-se</span>
+    </div>
+
+    <section id="menuScreen" class="screen-overlay menu-overlay" aria-labelledby="menuTitle" role="dialog" aria-modal="true">
+      <div class="panel-card menu-card">
+        <div class="menu-topline">
+          <span class="eyebrow">runner 3D • 3 faixas • 5 fases</span>
+          <span class="menu-version">v1.0</span>
+        </div>
+        <div class="hero-emblem" aria-hidden="true"><span>✦</span><i></i></div>
+        <h1 id="menuTitle">Aurora <em>Dash</em></h1>
+        <p class="intro">Uma corrida original pelo vale dos cristais. Desvie, salte, deslize e mantenha a aurora acesa.</p>
+
+        <section class="start-explanation" aria-labelledby="explanationTitle">
+          <div class="explanation-heading">
+            <span class="explanation-mark" aria-hidden="true">✦</span>
+            <div>
+              <strong id="explanationTitle">Antes de começar</strong>
+              <small>Entenda a aventura em poucos segundos</small>
+            </div>
+          </div>
+          <p>Você começa na <strong>Fase 1 — Entrada do Vale</strong> e precisa atravessar <strong>5 fases</strong>. A velocidade e os obstáculos aumentam a cada etapa. Colete cristais para fazer pontos; ao terminar a distância, aparecerá uma explicação da próxima fase.</p>
+          <div class="explanation-steps" aria-label="Passos principais">
+            <div><b>01</b><strong>Desvie</strong><small>Mude de faixa</small></div>
+            <div><b>02</b><strong>Salte</strong><small>Passe nas pedras</small></div>
+            <div><b>03</b><strong>Deslize</strong><small>Passe sob galhos</small></div>
+          </div>
+          <div class="phase-preview" aria-label="Fases da partida">
+            <span><b>Fase 1</b> Entrada do Vale</span>
+            <span><b>Fase 2</b> Minas de Cristal</span>
+            <span><b>Fase 3</b> Bosque Suspenso</span>
+            <span><b>Fase 4</b> Tempestade de Luz</span>
+            <span><b>Fase 5</b> Arco da Aurora</span>
+          </div>
+        </section>
+
+        <div class="menu-actions">
+          <button id="playButton" class="primary-button" type="button">
+            <span>Jogar agora</span><b aria-hidden="true">→</b>
+          </button>
+          <div class="secondary-actions">
+            <button id="howToButton" class="secondary-button" type="button"><span aria-hidden="true">?</span> Como jogar</button>
+            <button id="accessibilityButton" class="secondary-button" type="button"><span aria-hidden="true">⚙</span> Acessibilidade</button>
+          </div>
+        </div>
+
+        <div class="menu-summary" aria-label="Resumo da partida">
+          <div><span>Melhor pontuação</span><strong id="bestValue">0</strong></div>
+          <div><span>Estrutura</span><strong>5 fases</strong></div>
+          <div><span>Distância total</span><strong>1.240 m</strong></div>
+        </div>
+
+        <div class="menu-controls" aria-label="Controles principais">
+          <div><kbd>A</kbd><kbd>D</kbd><span>mover</span></div>
+          <div><kbd>Espaço</kbd><span>pular</span></div>
+          <div><kbd>S</kbd><span>deslizar</span></div>
+          <div><kbd>P</kbd><span>pausar</span></div>
+        </div>
+
+        <p class="panel-footnote">Feito com HTML, CSS e JavaScript • sem imagens externas • funciona offline</p>
+      </div>
+    </section>
+
+    <section id="helpScreen" class="screen-overlay compact-overlay" aria-labelledby="helpTitle" role="dialog" aria-modal="true" hidden>
+      <div class="panel-card small-card">
+        <button class="close-button" data-close-screen="helpScreen" type="button" aria-label="Fechar instruções">×</button>
+        <span class="eyebrow">guia rápido</span>
+        <h2 id="helpTitle">Como jogar</h2>
+        <p>Corra por três faixas e atravesse as cinco fases do vale. Cada tipo de obstáculo tem uma resposta diferente; ao terminar uma fase, você recebe uma explicação antes da próxima.</p>
+        <div class="help-list">
+          <div class="help-item"><span class="help-symbol cyan-symbol" aria-hidden="true">↔</span><div><strong>Mudar de faixa</strong><p>Use <kbd>A</kbd>/<kbd>D</kbd> ou as setas. Procure uma faixa livre.</p></div></div>
+          <div class="help-item"><span class="help-symbol violet-symbol" aria-hidden="true">↑</span><div><strong>Saltar</strong><p>Use <kbd>W</kbd>, <kbd>↑</kbd> ou <kbd>Espaço</kbd> para passar por pedras baixas.</p></div></div>
+          <div class="help-item"><span class="help-symbol coral-symbol" aria-hidden="true">↓</span><div><strong>Deslizar</strong><p>Use <kbd>S</kbd> ou <kbd>↓</kbd> para passar sob galhos luminosos.</p></div></div>
+          <div class="help-item"><span class="help-symbol lime-symbol" aria-hidden="true">✧</span><div><strong>Coletar cristais</strong><p>Cada cristal aumenta o placar. Sequências rendem pontos extras.</p></div></div>
+        </div>
+        <button class="primary-button" data-close-screen="helpScreen" type="button">Entendi <b aria-hidden="true">→</b></button>
+      </div>
+    </section>
+
+    <section id="settingsScreen" class="screen-overlay compact-overlay" aria-labelledby="settingsTitle" role="dialog" aria-modal="true" hidden>
+      <div class="panel-card settings-card">
+        <button class="close-button" data-close-screen="settingsScreen" type="button" aria-label="Fechar configurações">×</button>
+        <span class="eyebrow"> personalize sua experiência</span>
+        <h2 id="settingsTitle">Acessibilidade</h2>
+        <p class="settings-intro">Escolha o que funciona melhor para você. As opções ficam salvas neste navegador.</p>
+
+        <div class="settings-list">
+          <label class="setting-row">
+            <span class="setting-copy"><strong>Reduzir animações</strong><small>Diminui movimentos e efeitos de tela.</small></span>
+            <input id="motionToggle" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="setting-row">
+            <span class="setting-copy"><strong>Alto contraste</strong><small>Aumenta o contraste entre texto e fundo.</small></span>
+            <input id="contrastToggle" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="setting-row">
+            <span class="setting-copy"><strong>Texto ampliado</strong><small>Aumenta o tamanho das informações do menu.</small></span>
+            <input id="largeTextToggle" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="setting-row">
+            <span class="setting-copy"><strong>Cores diferenciadas</strong><small>usa símbolos e tons mais distinguíveis.</small></span>
+            <input id="colorSafeToggle" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="setting-row">
+            <span class="setting-copy"><strong>Anúncios detalhados</strong><small>Descreve obstáculos e eventos para leitores de tela.</small></span>
+            <input id="announcerToggle" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+          <label class="setting-row">
+            <span class="setting-copy"><strong>Sons do jogo</strong><small>Ativa ou desativa os efeitos sonoros.</small></span>
+            <input id="soundToggle" type="checkbox">
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <div class="settings-footer">
+          <button id="resetSettingsButton" class="text-button" type="button">Restaurar padrões</button>
+          <button class="primary-button" data-close-screen="settingsScreen" type="button">Pronto <b aria-hidden="true">✓</b></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="pauseScreen" class="screen-overlay compact-overlay" aria-labelledby="pauseTitle" role="dialog" aria-modal="true" hidden>
+      <div class="panel-card small-card">
+        <span class="pause-symbol" aria-hidden="true">Ⅱ</span>
+        <span class="eyebrow">um instante para respirar</span>
+        <h2 id="pauseTitle">Corrida pausada</h2>
+        <p>O vale continua brilhando. Volte quando estiver pronto.</p>
+        <button id="resumeButton" class="primary-button" type="button">Continuar corrida <b aria-hidden="true">→</b></button>
+        <div class="pause-links">
+          <button id="pauseSettingsButton" class="text-button" type="button">Acessibilidade</button>
+          <button id="pauseRestartButton" class="text-button" type="button">Reiniciar</button>
+          <button id="pauseMenuButton" class="text-button" type="button">Menu principal</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="phaseScreen" class="screen-overlay compact-overlay" aria-labelledby="phaseTitle" role="dialog" aria-modal="true" hidden>
+      <div class="panel-card phase-card">
+        <span id="phaseBadge" class="phase-badge-large" aria-hidden="true">✦</span>
+        <span id="phaseTag" class="eyebrow">Fase 1 concluída</span>
+        <h2 id="phaseTitle">Entrada do Vale</h2>
+        <p id="phaseDescription">Você aprendeu a controlar as faixas e está pronto para o próximo setor.</p>
+
+        <div class="phase-stats" aria-label="Resumo da fase concluída">
+          <div><span>Distância</span><strong id="phaseDistance">180 m</strong></div>
+          <div><span>Cristais</span><strong id="phaseCrystalsValue">0 / 8</strong></div>
+        </div>
+
+        <div class="phase-next-note">
+          <span aria-hidden="true">✧</span>
+          <p id="phaseNextText">A próxima fase será explicada aqui.</p>
+        </div>
+        <button id="nextPhaseButton" class="primary-button" type="button">Próxima fase <b aria-hidden="true">→</b></button>
+        <button id="phaseSettingsButton" class="text-button" type="button">Acessibilidade</button>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen-overlay compact-overlay" aria-labelledby="resultTitle" role="dialog" aria-modal="true" hidden>
+      <div class="panel-card result-card">
+        <span id="resultIcon" class="result-symbol" aria-hidden="true">✦</span>
+        <span class="eyebrow">relatório da corrida</span>
+        <h2 id="resultTitle">A aurora brilha!</h2>
+        <p id="resultMessage">Você manteve a luz acesa até o fim.</p>
+
+        <div class="result-grid">
+          <div><strong id="finalScore">0</strong><span>pontos</span></div>
+          <div><strong id="finalDistance">0 m</strong><span>distância</span></div>
+          <div><strong id="finalCrystals">0</strong><span>cristais</span></div>
+          <div><strong id="finalCombo">x0</strong><span>melhor combo</span></div>
+          <div><strong id="finalPhases">0 / 3</strong><span>fases concluídas</span></div>
+        </div>
+
+        <p id="recordMessage" class="record-message"></p>
+        <div class="result-actions">
+          <button id="playAgainButton" class="primary-button" type="button">Correr novamente <b aria-hidden="true">↻</b></button>
+          <button id="resultMenuButton" class="text-button" type="button">Voltar ao menu</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="errorScreen" class="screen-overlay compact-overlay" aria-labelledby="errorTitle" role="alertdialog" aria-modal="true" hidden>
+      <div class="panel-card small-card">
+        <span class="result-symbol error-symbol" aria-hidden="true">!</span>
+        <span class="eyebrow">não foi possível iniciar o 3D</span>
+        <h2 id="errorTitle">WebGL indisponível</h2>
+        <p id="errorMessage">Atualize seu navegador ou ative a aceleração de hardware para jogar em 3D.</p>
+      </div>
+    </section>
+
+    <nav class="touch-controls" aria-label="Controles de toque">
+      <div class="direction-controls">
+        <button id="leftButton" class="touch-button" type="button" aria-label="Mover para a esquerda">‹</button>
+        <button id="rightButton" class="touch-button" type="button" aria-label="Mover para a direita">›</button>
+      </div>
+      <div class="action-controls">
+        <button id="slideButton" class="touch-button action-button slide-touch" type="button" aria-label="Deslizar">↓</button>
+        <button id="jumpButton" class="touch-button action-button jump-touch" type="button" aria-label="Pular">↑</button>
+      </div>
+    </nav>
+
+    <div class="bottom-credit" aria-hidden="true">AURORA DASH 3D • 5 FASES • <strong>A</strong>/<strong>D</strong> mover • <strong>Espaço</strong> pular • <strong>S</strong> deslizar</div>
+  </main>
+</body>
+</html>
