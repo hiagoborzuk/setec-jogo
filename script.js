@@ -108,8 +108,8 @@ const PHASES = Object.freeze([
     number: 1,
     name: "Entrada do Vale",
     shortName: "Entrada",
-    distance: 180,
-    crystalGoal: 8,
+    distance: 800,
+    crystalGoal: 14,
     baseSpeed: 16,
     difficulty: 0.18,
     description: "Aprenda a controlar as três faixas. Aqui, os cristais são mais fáceis de encontrar e o ritmo começa suave."
@@ -118,18 +118,18 @@ const PHASES = Object.freeze([
     number: 2,
     name: "Minas de Cristal",
     shortName: "Minas",
-    distance: 220,
-    crystalGoal: 10,
+    distance: 1000,
+    crystalGoal: 17,
     baseSpeed: 19,
     difficulty: 0.36,
-    description: "As minedras se estreitam e os obstáculos chegam mais rápido. Use o impulso e procure combinações de cristais."
+    description: "As minas se estreitam e os obstáculos chegam mais rápido. Use o impulso e procure combinações de cristais."
   },
   {
     number: 3,
     name: "Bosque Suspenso",
     shortName: "Bosque",
-    distance: 240,
-    crystalGoal: 11,
+    distance: 1100,
+    crystalGoal: 19,
     baseSpeed: 22,
     difficulty: 0.54,
     description: "Atravesse o bosque flutuante e misture saltos e deslizes para não perder o ritmo."
@@ -138,8 +138,8 @@ const PHASES = Object.freeze([
     number: 4,
     name: "Tempestade de Luz",
     shortName: "Tempestade",
-    distance: 280,
-    crystalGoal: 13,
+    distance: 1250,
+    crystalGoal: 21,
     baseSpeed: 25,
     difficulty: 0.74,
     description: "A luz muda de direção e os cristais surgem em sequências apertadas. Foque na faixa livre."
@@ -148,8 +148,8 @@ const PHASES = Object.freeze([
     number: 5,
     name: "Arco da Aurora",
     shortName: "Arco",
-    distance: 320,
-    crystalGoal: 15,
+    distance: 1400,
+    crystalGoal: 24,
     baseSpeed: 28,
     difficulty: 0.92,
     description: "A última velocidade do vale. Mantenha a integridade, escolha bem as faixas e alcance o arco final."
@@ -481,7 +481,7 @@ function finishRun(completedAllPhases = false) {
     ui.resultMessage.textContent = `Você concluiu as ${PHASES.length} fases do vale e percorreu ${formatNumber(Math.floor(state.distance))} metros.`;
   } else {
     const currentPhase = getCurrentPhase();
-    ui.resultMessage.textContent = `Você chegou à ${currentPhase.name}, fase ${currentPhase.number} de ${PHASES.length}. Tente completar o próximo trecho!`;
+    ui.resultMessage.textContent = `Você chegou à fase ${currentPhase.number} de ${PHASES.length} — ${currentPhase.name}. Tente completar o próximo trecho!`;
   }
   ui.finalScore.textContent = formatNumber(state.score);
   ui.finalDistance.textContent = `${formatNumber(Math.floor(state.distance))} m`;
@@ -529,8 +529,8 @@ function completeCurrentPhase() {
   ui.phaseTag.textContent = `Fase ${completedPhase.number} concluída`;
   ui.phaseTitle.textContent = completedPhase.name;
   ui.phaseDescription.textContent = crystalGoalReached
-    ? `${completedPhase.description} Meta de cristais cumprida: +100 pontos e uma integridade reparada.`
-    : `${completedPhase.description} Você terminou a fase; coletar mais cristais teria dado um bônus.`;
+    ? `Você atravessou ${completedPhase.name}. Meta de cristais cumprida: +100 pontos e uma integridade reparada.`
+    : `Você atravessou ${completedPhase.name}. Coletar mais cristais teria dado um bônus de pontos e integridade.`;
   ui.phaseDistance.textContent = `${formatNumber(completedPhase.distance)} m`;
   ui.phaseCrystalsValue.textContent = `${state.phaseCrystals} / ${completedPhase.crystalGoal}`;
   ui.phaseNextText.textContent = `Próxima: ${nextPhase.name} — ${nextPhase.description}`;
@@ -1411,7 +1411,9 @@ function bindEvents() {
         closeHelp();
       } else if (settingsOpen) {
         closeSettings();
-      } else if (!pauseOpen && !phaseOpen && !resultOpen && !errorOpen && !menuOpen) {
+      } else if (pauseOpen) {
+        resumeGame();
+      } else if (!phaseOpen && !resultOpen && !errorOpen && !menuOpen) {
         togglePause();
       }
       return;
@@ -1780,6 +1782,10 @@ function bindVertexAttributes(buffer) {
 }
 
 function applyModelTransform(x, y, z, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ, color, emissive, alpha) {
+  // Evita divisão por zero (NaN) quando uma partícula chega ao tamanho zero.
+  scaleX = Math.max(Math.abs(scaleX), 0.0001);
+  scaleY = Math.max(Math.abs(scaleY), 0.0001);
+  scaleZ = Math.max(Math.abs(scaleZ), 0.0001);
   const model = composeModel(
     [x, y, z],
     [scaleX, scaleY, scaleZ],
