@@ -346,6 +346,76 @@ button:disabled {
   pointer-events: none;
 }
 
+.school-side {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.school-side-left {
+  left: max(18px, env(safe-area-inset-left));
+}
+
+.school-side-right {
+  right: max(18px, env(safe-area-inset-right));
+}
+
+.school-side img {
+  display: block;
+  width: clamp(84px, 11vw, 150px);
+  height: clamp(84px, 11vw, 150px);
+  border: 2px solid rgba(111, 244, 255, 0.6);
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0a1233;
+  box-shadow: 0 0 34px rgba(111, 244, 255, 0.35), 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.school-side strong {
+  padding: 5px 14px;
+  border: 1px solid var(--line-bright);
+  border-radius: 99px;
+  color: var(--cyan-bright);
+  background: rgba(6, 9, 29, 0.72);
+  font-size: clamp(0.85rem, 1.5vw, 1.25rem);
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+.school-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto 14px;
+}
+
+.school-banner img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border: 2px solid rgba(111, 244, 255, 0.55);
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0a1233;
+  box-shadow: 0 0 26px rgba(111, 244, 255, 0.3);
+}
+
+.school-banner strong {
+  color: var(--cyan-bright);
+  font-size: 1.5rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+}
+
 .mission-label {
   color: var(--cyan-bright);
   font-size: 0.58rem;
@@ -1680,6 +1750,30 @@ body.reduce-motion *::after {
     padding: 6px 8px;
   }
 
+  .school-side {
+    gap: 5px;
+    opacity: 0.88;
+  }
+
+  .school-side-left {
+    left: 6px;
+  }
+
+  .school-side-right {
+    right: 6px;
+  }
+
+  .school-side img {
+    width: 54px;
+    height: 54px;
+    border-width: 1px;
+  }
+
+  .school-side strong {
+    padding: 3px 8px;
+    font-size: 0.6rem;
+  }
+
   .mission-label {
     letter-spacing: 0;
   }
@@ -1787,6 +1881,15 @@ body.reduce-motion *::after {
   .integrity {
     top: 92px;
     left: 10px;
+  }
+
+  .school-side img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .school-side strong {
+    font-size: 0.62rem;
   }
 
   .status-message {
